@@ -51,14 +51,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       data = JSON.parse(text)
     } catch (parseErr) {
       console.error('Failed to parse Azure response as JSON:', text)
-      throw new Error('Invalid JSON')
+      // include raw text in thrown error so catch block can return it
+      const err = new Error('Invalid JSON')
+      // @ts-ignore
+      err.details = text
+      throw err
     }
     const content = data.choices?.[0]?.message?.content || 'לא הצלחתי לקבל תשובה.'
 
     return res.status(200).json({ content })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Server error:', error)
-    // include error message for debugging
-    return res.status(500).json({ error: 'Internal server error', details: error instanceof Error ? error.message : String(error) })
+    // include error message and any extra details for debugging
+    const resp: any = { error: 'Internal server error', details: error instanceof Error ? error.message : String(error) }
+    if (error?.details) resp.raw = error.details
+    return res.status(500).json(resp)
   }
 }
