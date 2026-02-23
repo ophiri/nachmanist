@@ -51,11 +51,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       data = JSON.parse(text)
     } catch (parseErr) {
       console.error('Failed to parse Azure response as JSON:', text)
-      // include raw text in thrown error so catch block can return it
-      const err = new Error('Invalid JSON')
-      // @ts-ignore
-      err.details = text
-      throw err
+      // immediately return the raw text so we can see what Azure sent
+      return res.status(500).json({
+        error: 'Invalid JSON from Azure',
+        azureText: text
+      })
     }
     const content = data.choices?.[0]?.message?.content || 'לא הצלחתי לקבל תשובה.'
 
