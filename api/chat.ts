@@ -11,8 +11,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY) {
+    console.error('Config missing', { endpoint: AZURE_OPENAI_ENDPOINT, key: !!AZURE_OPENAI_API_KEY })
     return res.status(500).json({ error: 'Azure OpenAI not configured on server' })
   }
+  // debug log the values we are using (endpoint & deployment only; never log the key)
+  console.log('Using Azure config', { endpoint: AZURE_OPENAI_ENDPOINT, deployment: AZURE_OPENAI_DEPLOYMENT, apiVersion: AZURE_OPENAI_API_VERSION })
 
   try {
     const { messages } = req.body
