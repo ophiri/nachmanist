@@ -7,7 +7,7 @@ const AZURE_OPENAI_API_VERSION = process.env.AZURE_OPENAI_API_VERSION || '2024-0
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // quick debug endpoint: GET /api/chat?debug=1 will show config values
-  if (req.method === 'GET' && req.query.debug) {
+  if (req.method === 'GET' && Object.prototype.hasOwnProperty.call(req.query, 'debug')) {
     return res.status(200).json({
       endpoint: AZURE_OPENAI_ENDPOINT,
       deployment: AZURE_OPENAI_DEPLOYMENT,
