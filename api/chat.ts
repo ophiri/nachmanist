@@ -44,7 +44,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(response.status).json({ error: 'Azure OpenAI API error', details: errorText })
     }
 
-    const data = await response.json()
+    // Azure may sometimes return malformed JSON; read text so we can inspect
+    const text = await response.text()
+    let data: any
+    try {
+      data = JSON.parse(text)
+    } catch (parseErr) {
+      console.error('Failed to parse Azure response as JSON:', text)
+      throw new Error('Invalid JSON')
+    }
     const content = data.choices?.[0]?.message?.content || 'לא הצלחתי לקבל תשובה.'
 
     return res.status(200).json({ content })
