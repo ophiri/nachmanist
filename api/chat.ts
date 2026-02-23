@@ -6,6 +6,14 @@ const AZURE_OPENAI_DEPLOYMENT = process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4o'
 const AZURE_OPENAI_API_VERSION = process.env.AZURE_OPENAI_API_VERSION || '2024-08-01-preview'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // quick debug endpoint: GET /api/chat?debug=1 will show config values
+  if (req.method === 'GET' && req.query.debug) {
+    return res.status(200).json({
+      endpoint: AZURE_OPENAI_ENDPOINT,
+      deployment: AZURE_OPENAI_DEPLOYMENT,
+      apiVersion: AZURE_OPENAI_API_VERSION
+    })
+  }
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
