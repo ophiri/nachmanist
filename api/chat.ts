@@ -40,7 +40,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Azure OpenAI error:', response.status, errorText)
-      return res.status(response.status).json({ error: 'Azure OpenAI API error' })
+      // return full error for debugging (remove/change in production)
+      return res.status(response.status).json({ error: 'Azure OpenAI API error', details: errorText })
     }
 
     const data = await response.json()
@@ -49,6 +50,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ content })
   } catch (error) {
     console.error('Server error:', error)
-    return res.status(500).json({ error: 'Internal server error' })
+    // include error message for debugging
+    return res.status(500).json({ error: 'Internal server error', details: error instanceof Error ? error.message : String(error) })
   }
 }
